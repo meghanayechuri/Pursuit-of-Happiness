@@ -1,0 +1,268 @@
+<!DOCTYPE html> 
+<head>
+<meta charset="utf-8">
+</head>
+
+<style>
+
+ circle {
+        fill: steelblue;
+        fill-opacity: .8;
+      }
+      body {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+}
+
+h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  color: #707070;
+}
+
+#polygon-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: white;
+}
+
+.button {
+    width: 8em;
+    border: 2px;
+    border-color: #707070;
+    background: #efefef;
+    border-radius: 5px;
+    text-align: center;
+    position: absolute;
+    margin-left: 1000px;
+    margin-top: 600px;
+}
+
+a {
+    display: block;
+    width: 100%;
+    line-height: 2em;
+    text-align: center;
+    text-decoration: none;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    border-radius: 5px;
+}
+a:hover {
+    color: #707070;
+    background: #efefef;
+}
+
+</style>
+</style>
+
+<body>
+<div id="canvas"></div>
+  
+<!-- load the d3.js library -->   
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> 	
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>
+
+<!-- stress portrait code -->
+
+<script>
+
+
+
+  
+
+/**********************  
+
+      Set up the page FOR CIRCLES
+
+************************/
+var tooltip = d3.select("body")
+                  .append("div")
+                  .style('position','absolute')
+                  .style('text-align','center')
+                  .style('width','30px')
+                  .style('margin-top','-20px')
+                  .style('font','200x sans-serif')
+                  .style('padding','0 6.5px')
+                  .style('opacity',0)
+                  .attr('class','tooltip');
+      (function() {
+ var self_help_stratergies = ["Commiting to Goals","Stratergies for Coping","Avoid overthinking/Avoid Social Comparison","Meditate","Self-Care","Physical Activity","Acts of Kindness","Expressing Gratitude"];
+      var self_help_images = ["Commitingtogoals.png","file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Stratergiesforcoping.png","file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Avoidoverthinking.png","file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Meditate.png","file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/SelfCare.png","file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/PhysicalActivity.png","file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/ActsofKindness.png","file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/ExpressingGratitude.png"];
+       var createNodes = function (numNodes, radius) {
+         var nodes = [], 
+             width = (radius * 2) + 50,          // 500 changes the location on the screen 
+             height = (radius * 2) + 50,
+             angle,
+             x,
+             y,
+             label,
+             i;
+         for (i=0; i<numNodes; i++) {
+          angle = (i / (numNodes/2)) * Math.PI; // Calculate the angle at which the element will be placed.
+                                                // For a semicircle, we would use (i / numNodes) * Math.PI.
+          x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
+          y = (radius * Math.sin(angle)) + (width/2); // Calculate the y position of the element.
+          nodes.push({'id': i, 'x': x, 'y': y,label:self_help_stratergies[i]});
+         }
+         return nodes;
+       }
+
+var margin = {top: 10, right: 10, bottom: 10, left: 10};
+var width = 500 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
+       var createSvg = function (radius, callback) {
+         d3.selectAll('svg').remove();
+         var svg = d3.select('#canvas').append("svg")
+                    .attr('width', (radius * 2) + 500)
+                    .attr('height', (radius * 2) + 500)
+                    //.append("g")
+          //     <defs>
+          // <pattern id="Meditate" height="100" width="100" patternContentUnits="objectBoundingBox">
+          //     <image height="1" width="1" preserveAspectRatio="none" xlink:href="file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Meditate.png"></image>
+          //     </pattern>
+          //     </defs>
+          // var defs=svg.append("defs");
+          // defs.append("pattern")
+          //   .attr("id","Meditate")
+          //   .attr("height","100%")
+          //   .attr("width","100%")
+          //   .attr("patternContentUnits","objectBoundingBox")
+          //   .append("image")
+          //   .attr("height",40)
+          //   .attr("width",40)
+          //   .attr("preserveAspectRatio","none")
+          //   //.append("a")
+          //   .attr("xlink:href", "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Meditate.jpg");
+
+         callback(svg);
+         
+       }
+
+
+       var createElements = function (svg, nodes, elementRadius) {
+        var defs=svg.append("defs");
+       self_help_images.forEach(function(d,i){
+        //console.log(d);
+   
+          defs.append("pattern")
+            .attr("id","Meditate"+i)
+            .attr("height","80")
+            .attr("width","80")
+            .attr("patternContentUnits","objectBoundingBox")
+            .append("svg:image")
+            .attr("height",80)
+            .attr("width",80)
+            .attr("preserveAspectRatio","none")
+            //.append("a")
+            .attr("xlink:href", "https://cdn1.iconfinder.com/data/icons/user-pictures/100/male3-128.png");
+                
+           // console.log(self_help_images);
+          element = svg.append("image")
+         //selectAll("circle")
+         //                .data(nodes)
+         //              .enter()
+                      //   .append("a")
+                      //   .attr("xlink:href", "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Meditate.jpg")
+                       //.append("circle")
+                      
+                        .attr('r', elementRadius)
+                        .attr('width', 525) 
+                         
+                        
+                        .attr('height', 275 )
+                        //.attr("fill","https://cdn1.iconfinder.com/data/icons/user-pictures/100/male3-128.png")
+                        .attr("xlink:href", self_help_images[i] )
+                        //.attr("clip-path","url(#Meditate)")
+
+                          //url(#Meditate"+i+")")
+
+                        //.append("image")
+                        // .append("a")
+                        // .attr("xlink:href", "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Meditate.jpg")
+                        // .attr("width",40)
+                        // .attr("height",40)
+                        //;
+                        //.attr("fill","url(#Meditate)");
+                        
+
+                        //;                              
+                       .on("mouseover", function(d){
+                                          tooltip.transition()
+                                            .style('opacity', 10)
+                                          tooltip.html( "Name")
+                                            .style('left',(d3.event.pageX - 15) + 'px')   //-15 :- tooltip location relative to the mouse
+                                            .style('top', (d3.event.pageY - 15) + 'px')
+                        });
+
+                       });
+                       //  .on('mouseout', function(d) {
+                       //      tooltip.transition()
+                       //        .style('opacity', 0)
+                       //   });
+              // element.append("image")
+              // .attr("xlink:href", function() {return "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Meditate.png"})
+              // .attr('width', function (d, i) {
+              //             return d.x;
+              //           })
+              // .attr('height', function (d, i) {
+              //             return d.y;
+              //           });     
+                        // .on("mousemove", function(d){
+                        //   console.log(d.x);
+                        //   return tooltip.attr("x", d.x+radius)
+                        //   .attr("y",d.y+radius);})
+                        // .on("mouseout", function(){return tooltip.style("visibility", "hidden");});;
+       }
+/**********************  
+
+      Set up the page 
+
+************************/
+
+  
+
+
+
+
+
+
+
+       var draw = function () {
+         var numNodes = 8;
+         var radius = 250;
+         var nodes = createNodes(numNodes, radius);
+         createSvg(radius, function (svg) {
+
+           createElements(svg, nodes, 40);
+           });
+  
+  
+       }
+
+      $(document).ready(function() {
+          draw();
+      });
+
+      $("#radius, #numNodes").bind('keyup', function(e) {
+          draw();
+      });
+
+      
+
+
+})();
+
+</script>
+
+
+
+
+
+
+</body>
+</html>

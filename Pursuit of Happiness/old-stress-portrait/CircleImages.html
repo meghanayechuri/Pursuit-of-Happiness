@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style>
+    body { margin:0;position:center;top:200;right:10;bottom:10;left:350; }
+    
+    /*svg {
+      background-color: #F5FFFA;
+    }*/
+    .circle-outline {
+      fill: none;
+      stroke: #dbdbdb;
+      stroke-width: 2;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+  // ---------- Creating SVG ---------------
+    var svg = d3.select("body").append("svg")
+      .attr("width", 2000)
+      .attr("height", 2000)
+    
+    var image = {
+      size: 200
+    }
+  
+  // ---------- Creating defs , clipPath ; glow  
+    var defs = svg.append("defs");
+    
+    var clipPath = defs.append("clipPath")
+      .attr("id", "clip")
+      .append("circle")
+      .attr("cx", image.size / 2)
+      .attr("cy", image.size / 2)
+      .attr("r", image.size / 2);
+    
+    var glow = defs.append("filter")
+    	.attr("id", "glow");
+    glow.append("feGaussianBlur")
+      .attr("class", "blur")
+      .attr("stdDeviation", 3.5)
+      .attr("result","coloredBlur");
+    
+    var feMergeGlow = glow.append("feMerge");
+    feMergeGlow.append("feMergeNode")
+      .attr("in","coloredBlur");
+    feMergeGlow.append("feMergeNode")
+      .attr("in","SourceGraphic");
+   
+  // -----------------  Image URL's Harcoded-------------------
+    var doctorUrl1 = "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Commitingtogoals.png",
+        doctorUrl2 = "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Stratergiesforcoping.png",
+        doctorUrl3 = "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Avoidoverthinking.png",
+        doctorUrl4 = "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/Meditate.jpg",
+        doctorUrl5 ="file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/SelfCare.png",
+        doctorUrl6 = "/Users/meghana/Downloads/drive-download-20190405T021805Z-001/PhysicalActivity.png",
+        doctorUrl7 = "file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/ActsofKindness.png",
+        doctorUrl8="file:///Users/meghana/Downloads/drive-download-20190405T021805Z-001/ExpressingGratitude.png";
+
+
+// -------------- Code Called to Output the Images -------------------    
+    outputImage(doctorUrl1, [550, 200]);
+    outputImage(doctorUrl2, [462.13203435596427, 412.13203435596427]);
+    outputImage(doctorUrl3, [250.00000000000003, 500]);
+    outputImage(doctorUrl4, [37.86796564403576, 412.13203435596427]);
+    outputImage(doctorUrl5, [-50, 200.00000000000003]);
+    outputImage(doctorUrl6, [37.867965644035706, -12.132034355964237]);
+    outputImage(doctorUrl7, [249.99999999999994, -100]);
+    outputImage(doctorUrl8, [462.13203435596427, -12.132034355964294]);
+   
+    
+ // ------------ Function to Output Images -------------   
+    function outputImage(url, position) {
+      var imageGroup = svg.append("g")
+      	.datum({position: position})
+        .attr("transform", d => "translate(" + d.position + ")");
+
+      var circleFill = imageGroup.append("circle")
+      	.attr("class", "circle-fill")
+        .attr("cx", image.size / 2)
+        .attr("cy", image.size / 2 )
+        .attr("r", 40)
+        .attr("filter", "url(#glow");
+
+      var imageElem = imageGroup.append("image")
+        .attr("xlink:href", url)
+        .attr("height", image.size)
+        .attr("width", image.size)
+        .attr("clip-path", "url(#clip)");
+    
+      var circleOutline = imageGroup.append("circle")
+        .attr("class", "circle-outline")
+        .attr("cx", image.size / 2)
+        .attr("cy", image.size / 2 )
+        .attr("r",  40);
+
+      
+      
+    }
+    
+
+    
+  </script>
+</body>

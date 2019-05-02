@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> 
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>  
+
+<style>
+
+  body { margin:0;
+    position:center;
+    top:200;
+    right:10;
+    bottom:10;
+    left:350;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    color: #454545;
+  }
+  h2 {
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    color: #707070;
+    text-align: center;
+  }
+
+  #polygon-text-small {
+    font-family: "Montserrat", sans-serif;
+    font-size: 8px;
+    color: white;
+  }
+
+  #psych-text {
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    color: #707070;
+  }
+
+  #legend-text {
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    color: #707070;  
+  }
+  .button {
+      width: 3em;
+      height: 1.5em;
+      border: 2px;
+      font-family: "Montserrat", sans-serif;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 16px;
+      color: #454545;
+      border-color: #707070;
+      background: #efefef;
+      border-radius: 5px;
+      position: absolute;
+      line-height: 35px;
+      margin-left: 1108px;
+      margin-top: 330px;
+      background-image: url(forward_button.png);
+      background-size: 50px 25px;
+      background-repeat: no-repeat;
+  }
+
+  .button-back {
+      width: 3em;
+      height: 1.5em;
+      border: 2px;
+      font-family: "Montserrat", sans-serif;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 16px;
+      color: #454545;
+      border-color: #707070;
+      background: #efefef;
+      border-radius: 5px;
+      position: absolute;
+      line-height: 35px;
+      margin-left: 48px;
+      margin-top: 330px;
+      background-image: url(back_button.png);
+      background-size: 50px 25px;
+      background-repeat: no-repeat;
+  }
+
+  .circle-outline {
+    fill: none;
+    stroke: #dbdbdb;
+    stroke-width: 2;
+  }
+
+  .clip {
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    color: #707070;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Button classes -->
+<div class="button" id = "button"></div>
+<div class="button-back" id = "button-back"></div>
+
+<!--Title -->
+<h2>Phase 2: Examine Positive Psychology Strategies</h2>
+
+<!-- Rest of page -->
+<div id="canvas"></div>
+  <script>
+
+  // ------------ Function to Output Images ------------- 
+  var tooltip = d3.select("body")
+                  .append("div")
+                  .style('position','absolute')
+                  .style('text-align','center')
+                  .style('width','30px')
+                  .style('margin-top','-20px')
+                  .style('font','200x sans-serif')
+                  .style('padding','0 6.5px')
+                  .style('opacity',0)
+                  .attr('class','tooltip');
+
+    function outputImage(url, position,label,description) {
+      var imageGroup = svg.append("g")
+        //.datum({position: position})
+        .attr("transform", d => "translate(" + position + ")");
+
+      var circleFill = imageGroup.append("circle")
+        .attr("class", "circle-fill")
+        .attr("cx", image.size / 2)
+        .attr("cy", image.size / 2 )
+        .attr("r", 30);
+       
+
+      var imageElem = imageGroup.append("image")
+        .attr("xlink:href", url)
+        .attr("height", image.size)
+        .attr("width", image.size)
+        .attr("clip-path", "url(#clip)")
+        .on("mouseover", function(d){
+            tooltip.transition()
+            .style('opacity', 10)
+            tooltip.html( description)
+            .style('left',(d3.event.pageX - 15) + 'px')   //-15 :- tooltip location relative to the mouse
+            .style('top', (d3.event.pageY - 15) + 'px')
+        });
+
+      imageGroup.append("rect");
+
+        imageGroup.append("text")
+          .attr("x",80)
+          .attr("y",166)
+          .attr("width",20)
+          .attr("height",20)
+          .text(label)
+          //.attr("fill", "#FFF")
+          .style("fill","#707070")
+          .style("font-size", "12px")
+          .attr("text-anchor", "middle")
+        
+      // var circleOutline = imageGroup.append("circle")
+      //   .attr("class", "circle-outline")
+      //   .attr("cx", image.size / 2)
+      //   .attr("cy", image.size / 2 )
+      //   .attr("r",  40)   ; 
+      
+    }
+  
+  // X and Y range + domain 
+  var x = d3.scaleLinear().range([0, 400]);
+  var y = d3.scaleLinear().range([400, 0]);
+  
+  x.domain([0, 55]);
+  y.domain([0, 55]);
+
+  //Array of stressors + their location on screen
+  var arrayOfPolygons =  [
+  {
+    "name": "polygon 1",
+    "points":[
+      {"x":5, "y":43},
+        {"x":11,"y":48},
+        {"x":23,"y":49}, 
+        {"x":20,"y":42} 
+    ],
+    "color": "#0894a1",
+    "stressor": "School-Social",
+    "stressor2": "Life Balance",
+    "ID": "Connection",
+    "stressorID": "School-Social Life Balance",
+    //Label properties 
+    "xlab": 178,
+    "ylab": 140,
+    "dx": 0,
+    "dy": "2em",
+    "dy2": "3em"
+  },{
+    "name": "polygon 2",
+    "points":[
+      {"x":5, "y":43},
+        {"x":20,"y":42},
+        {"x":26,"y":37}, 
+        {"x":18,"y":33} 
+    ],
+    "color": "#25A1AC",
+    "stressor": "Homesickness",
+    "ID": "Connection",
+    "stressorID": "Homesickness",
+    //label properties 
+    "xlab": 230,
+    "ylab": 180,
+    "dx": -50,
+    "dy": "3em"
+  },{
+    "name": "polygon 3",
+    "points":[
+      {"x":10, "y":27},
+        {"x":5,"y":43},
+        {"x":18,"y":33}, 
+        {"x":17,"y":28} 
+    ],
+    "color": "#43AEB7",
+    "stressor": "Language",
+    "stressor2": "Barrier & Cultural",
+    "stressor3": "Differences",
+    "ID": "Connection",
+    "stressorID": "Language Barrier and Cultural Differences",
+    //label properties 
+    "xlab": 125,
+    "ylab": 170,
+    "dx": 33,
+    "dy": "9em",
+    "dy2": "10em",
+    "dy3": "11em"
+  },{
+    "name": "polygon 4",
+    "points":[
+      {"x":5, "y":16},
+        {"x":10,"y":27},
+        {"x":17,"y":28}, 
+        {"x":15,"y":15} 
+    ],
+    "color": "#61BBC3",
+    "stressor": "Social Life",
+    "stressor2": "Improvement",
+    "stressorID": "Social Life Improvement",
+    "ID": "Connection",
+    //label properties 
+    "xlab": 170,
+    "ylab": 290,    
+    "dx": -15,
+    "dy": "5em",
+    "dy2": "6em"
+  },{
+    "name": "polygon 5",
+    "points":[
+      {"x":20, "y":42},
+        {"x":23,"y":49},
+        {"x":27,"y":49.5}, 
+        {"x":29,"y":41},
+        {"x":26,"y":37} 
+    ],
+    "color": "#7FC8CE",
+    "stressor": "Relationship",
+    "stressor2": "Difficulties",
+    "ID": "Connection",
+    "stressorID": "Relationship Difficulties",
+    //label properties 
+    "xlab": 263,
+    "ylab": 140,    
+    "dx": -10,
+    "dy": "4em",
+    "dy2": "5em"
+  },{
+    "name": "polygon 6",
+    "points":[
+      {"x":18, "y":33},
+        {"x":29,"y":41},
+        {"x":31,"y":32}, 
+        {"x":23,"y":29}
+    ],
+    "color": "#9DD5D9",
+    "stressor": "Extracurriculars",
+    "ID": "Connection",
+    "stressorID" : "Extracurriculars",
+    //label properties 
+    "xlab": 310,
+    "ylab": 190,    
+    "dx": -60,
+    "dy": "7em"
+  },{
+    "name": "polygon 7",
+    "points":[
+      {"x":14.3, "y":15},
+        {"x":18,"y":33},
+        {"x":23,"y":29},
+        {"x":26,"y":26}, 
+        {"x":20,"y":16}
+    ],
+    "color": "#BBE2E5",
+    stressor: "Loneliness",
+    "ID": "Connection",
+    "stressorID": "Loneliness",
+    //label properties 
+    "xlab": 225,
+    "ylab": 250,    
+    "dx": -5,
+    "dy": "9em"
+  },{
+    "name": "polygon 8",
+    "points":[
+      {"x":14.3, "y":15},
+        {"x":20,"y":16},
+        {"x":26,"y":12}, 
+        {"x":19,"y":7}
+    ],
+    "color": "#47AB6C",
+    "stressor": "Deadlines",
+    "ID": "Commitments",
+    "stressorID": "Deadlines",
+    //label properties 
+    "xlab": 240,
+    "ylab": 370,    
+    "dx": -20,
+    "dy": "4em"
+  },{
+    "name": "polygon 9",
+    "points":[
+      {"x":29, "y":41},
+        {"x":27,"y":49.5},
+        {"x":37,"y":47.5}, 
+        {"x":38.1,"y":40}
+    ],
+    "color": "#61B781",
+    "stressor": "Time Mgmt",
+    "ID": "Commitments",
+    "stressorID": "Time Management",
+    //label properties 
+    "xlab": 290,
+    "ylab": 130,    
+    "dx": 20,
+    "dy": "5em"
+  },{
+    "name": "polygon 10",
+    "points":[
+      {"x":23, "y":29},
+        {"x":31,"y":32},
+        {"x":33.6,"y":24.2},
+        {"x":31,"y":20}
+    ],
+    "color": "#7CC396",
+    "stressor": "Academic",
+    "stressor2": "Performance",
+    "ID": "Commitments",
+    "stressorID": "Academic Performance",
+    //label properties 
+    "xlab": 320,
+    "ylab": 250,    
+    "dx": -37,
+    "dy": "5em",
+    "dy2": "6em"
+  },{
+    "name": "polygon 11",
+    "points":[
+      {"x":20, "y":16},
+        {"x":25.7,"y":26},
+        {"x":31,"y":20}, 
+        {"x":26,"y":12}
+    ],
+    "color": "#97CFAB",
+    "stressor": "Homework &",
+    "stressor2": "Assignment",
+    "stressor3": "Management",
+    "ID": "Commitments",
+    "stressorID": "Homework and Assignment Management",
+    //label properties 
+    "xlab": 295,
+    "ylab": 290,    
+    "dx": -33,
+    "dy": "7em",
+    "dy2": "8em",
+    "dy3": "9em"
+  },{
+    "name": "polygon 12",
+    "points":[
+      {"x":31, "y":32},
+        {"x":29,"y":41},
+        {"x":38.1,"y":40}, 
+        {"x":40,"y":32}
+    ],
+    "color": "#B2DBC0",
+    "stressor": "Work-Study",
+    "stressor2": "Balance",
+    "ID": "Commitments",
+    "stressorID": "Work-Study Balance",
+    //label properties 
+    "xlab": 305,
+    "ylab": 195,    
+    "dx": 20,
+    "dy": "4em",
+    "dy2": "5em"
+  },{
+    "name": "polygon 13",
+    "points":[
+      {"x":26, "y":12},
+        {"x":33.6,"y":24.2},
+        {"x":36,"y":17}, 
+        {"x":36.5,"y":7}
+    ],
+    "color": "#CDE8D6",
+    "stressor": "Fear of",
+    "stressor2": "Failure",
+    "ID": "Commitments",
+    "stressorID": "Fear of Failure",
+    //label properties 
+    "xlab": 345,
+    "ylab": 305,    
+    "dx": -30,
+    "dy": "9em",
+    "dy2": "10em"
+  },{
+    "name": "polygon 14",
+    "points":[
+      {"x":36, "y":17},
+        {"x":31,"y":32},
+        {"x":40,"y":32}, 
+        {"x":44,"y":24}
+    ],
+    "color": "#f0a515",
+    "stressor": "Healthy Eating",
+    "ID": "Care",
+    "stressorID": "Healthy Eating",
+    //label properties 
+    "xlab": 310,
+    "ylab": 250,    
+    "dx": 30,
+    "dy": "6em",
+  },{
+    "name": "polygon 15",
+    "points":[
+      {"x":43, "y":45},
+        {"x":37,"y":47.5},
+        {"x":46,"y":50}, 
+        {"x":61,"y":42}
+    ],
+    "color": "#f6c25f",
+    "stressor": "Illness",
+    "ID": "Care",
+    "stressorID": "Illness",
+    //label properties 
+    "xlab": 350,
+    "ylab": 145,    
+    "dx": 70,
+    "dy": "1em"
+  },{
+    "name": "polygon 16",
+    "points":[
+      {"x":39.75, "y":33},
+        {"x":38.1,"y":40},
+        {"x":37,"y":47.5},
+        {"x":43,"y":45}, 
+        {"x":49,"y":36}
+    ],
+    "color": "#f7ce7f",
+    "stressor": "Staying Active",
+    "ID": "Care",
+    "stressorID": "Staying Active",
+    //label properties 
+    "xlab": 370,
+    "ylab": 195,    
+    "dx": 6,
+    "dy": "1em"
+  },{
+    "name": "polygon 17",
+    "points":[
+      {"x":44, "y":24},
+        {"x":40,"y":32},
+        {"x":39.75,"y":33},
+        {"x":49,"y":36}, 
+        {"x":53,"y":29}
+    ],
+    "color": "#fae2b3",
+    "stressor": "Difficulty Sleeping",
+    "ID": "Care",
+    "stressorID": "Difficulty Sleeping",
+    //label properties 
+    "xlab": 380,
+    "ylab": 260,    
+    "dx": 20,
+    "dy": "2em"
+  },{
+    "name": "polygon 18",
+    "points":[
+      {"x":36.5, "y":7},
+        {"x":36,"y":17},
+        {"x":44,"y":24}, 
+        {"x":52,"y":14}
+    ],
+    "color": "#f49484",
+    "stressor": "Personal Finance",
+    "ID": "Career",
+    "stressorID": "Personal Finance",
+    //label properties 
+    "xlab": 350,
+    "ylab": 365,    
+    "dx": 25,
+    "dy": "2em"
+  },{
+    "name": "polygon 19",
+    "points":[
+      {"x":53, "y":29},
+        {"x":43,"y":45},
+        {"x":61,"y":42}, 
+        {"x":60,"y":28}
+    ],
+    "color": "#ed553b",
+    "stressor": "Public Speaking",
+    "stressor2": "& Presentations",
+    "ID": "Career",
+    "stressorID": "Public Speaking and Presentations",
+    //label properties 
+    "xlab": 395,
+    "ylab": 155,    
+    "dx": 65,
+    "dy": "8em",
+    "dy2": "9em"
+  },{
+    "name": "polygon 20",
+    "points":[
+      {"x":44,"y":24},
+        {"x":53,"y":29},
+        {"x":60,"y":28}, 
+        {"x":52,"y":14}
+    ],
+    "color": "#f06d57",
+    "stressor": "Career Anxiety",
+    "ID": "Career",
+    "stressorID": "Career Anxiety",
+    //label properties 
+    "xlab": 480,
+    "ylab": 280,    
+    "dx": -40,
+    "dy": "6em"
+  }
+];
+
+               
+  // ---------- Creating SVG ---------------
+  var margin = {top: 100, right: 10, bottom: 10, left: 290};
+    
+var svg = d3.select("body").append("svg")
+      .attr("width", 1300)
+      .attr("height", 800)
+      .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");    
+
+  // var g=svg.selectAll("g")
+  //            .data(filteredData)
+  //        .enter();
+
+  //All possible stressors
+  var allStressors = ["School-Social Life Balance", "Homesickness", "Relationship Difficulties",
+    "Time Management", "Illness", "Staying Active", "Work-Study Balance", "Public Speaking and Presentations",
+    "Language Barrier and Cultural Differences", "Social Life Improvement", "Loneliness", "Deadlines", 
+    "Extracurriculars", "Academic Performance", "Healthy Eating", "Difficulty Sleeping", "Fear of Failure", 
+    "Career Anxiety", "Homework and Assignment Management", "Personal Finance"];
+
+  // Get the selected stressors from window URL 
+  var selectedStressorsArr = [];
+  var id = window.location.href.split('_');
+  console.log(id);
+  var len = id.length;
+  for(var i =0; i < len-1; i++) {
+    var current = id.pop().replace(/%20/g, " ");
+    //If the current stressor is NOT already in the list and it is a stressor, add it 
+    if (selectedStressorsArr.indexOf(current) <= -1 && allStressors.indexOf(current) > -1) {
+        selectedStressorsArr[i] = current;
+    }
+  }
+  console.log(selectedStressorsArr);
+
+  /*
+      Filter the data by only those polygons that were selected by the user
+  */
+  filteredData = arrayOfPolygons.filter(function (d) {
+      return selectedStressorsArr.indexOf(d.stressorID) > -1;
+  });
+  console.log(filteredData)
+
+  var g = svg.selectAll("g")
+    .data(filteredData)
+    .enter().append("g");
+
+   g.append("polygon")
+    .attr("class", "polygon")
+    .data(filteredData)
+    .attr("points",function(d) { 
+        return d.points.map(function(d) {
+            return [x(d.x+13),y(d.y-12.3)].join(",");
+        }).join(" ");
+    })
+    .attr("fill", function (d) {
+      return d.color });
+    //return color(d.name) });
+    
+    
+   g.append("text")
+    .attr("id", "polygon-text-small")
+    .data(filteredData)
+    .attr("x", function(d){return d.xlab;})
+    .attr("y", function(d){return d.ylab;})
+    .attr("dx", function(d){return (d.dx);})
+    .attr("dy", function(d){return (d.dy);})
+    .attr("fill", "#ffffff")
+    .text(function(d) {return d.stressor;});
+  
+  //For shapes that need a second line of text
+   g.append("text")
+    .attr("id", "polygon-text-small")
+    .data(filteredData)
+    .attr("x", function(d){return d.xlab;})
+    .attr("y", function(d){return d.ylab;})
+    .attr("dx", function(d){return d.dx;})
+    .attr("dy", function(d){return d.dy2;})
+    .attr("fill", "#ffffff")
+    .text(function(d) {return d.stressor2;}); 
+
+    //For shapes that need a third line of text
+   g.append("text")
+    .attr("id", "polygon-text-small")
+    .data(filteredData)
+    .attr("x", function(d){return d.xlab;})
+    .attr("y", function(d){return d.ylab;})
+    .attr("dx", function(d){return d.dx;})
+    .attr("dy", function(d){return d.dy3;})
+    .attr("fill", "#ffffff")
+    .text(function(d) {return d.stressor3;});
+
+    
+    
+    var image = {
+      size: 170
+    }
+  
+  // ---------- Creating defs , clipPath ;
+  var self_help_strategies = [
+    {"name": "Commiting to Goals",
+      "x" : 570,
+      "y" : 365
+     },
+     {"name" : "Strategies for Coping", 
+      "x" : 480,
+      "y" : 574
+     },
+     {"name" :"Avoid Social Comparison", 
+      "x" : 250,
+      "y" : 670
+     },
+     {"name" : "Meditate", 
+      "x" : 75,
+      "y" : 575
+     },
+     {"name" : "Self-Care", 
+      "x" : -10,
+      "y" : 360
+     },
+     {"name" : "Physical Activity", 
+      "x" : 35,
+      "y" : 142
+     },
+     {"name" : "Acts of Kindness", 
+      "x" : 273,
+      "y" : 70
+     },
+     {"name" : "Expressing Gratitude", 
+      "x" : 505,
+      "y" : 148
+     }  
+  ];
+
+
+    var defs = svg.append("defs");
+    
+    var clipPath = defs.append("clipPath")
+      .attr("id", "clip")
+      .append("circle")
+      .attr("cx", image.size / 2)
+      .attr("cy", image.size / 2)
+      .attr("r", image.size / 2);
+
+      // var tooltip = d3.select("body")
+      //             .append("div")
+      //             .style('position','absolute')
+      //             .style('text-align','center')
+      //             .style('width','30px')
+      //             .style('margin-top','-35px')
+      //             .style('font','200x sans-serif')
+      //             .style('padding','0 6.5px')
+      //             .style('opacity',0)
+      //             .attr('class','tooltip');
+    
+    // var glow = defs.append("filter")
+    //  .attr("id", "glow");
+    // glow.append("feGaussianBlur")
+    //   .attr("class", "blur")
+    //   .attr("stdDeviation", 3.5)
+    //   .attr("result","coloredBlur");
+    
+    // var feMergeGlow = glow.append("feMerge");
+    // feMergeGlow.append("feMergeNode")
+    //   .attr("in","coloredBlur");
+    // feMergeGlow.append("feMergeNode")
+    //   .attr("in","SourceGraphic");
+   
+      
+       
+  // -----------------  Image URL's Harcoded-------------------
+    var doctorUrl1 = "Self_Help_Images/Commitingtogoals.png",
+        doctorUrl2 = "Self_Help_Images/Stratergiesforcoping.png",
+        doctorUrl3 = "Self_Help_Images/Avoidoverthinking.png",
+        doctorUrl4 = "Self_Help_Images/Meditate.jpg",
+        doctorUrl5 = "Self_Help_Images/SelfCare.png",
+        doctorUrl6 = "Self_Help_Images/PhysicalActivity.png",
+        doctorUrl7 = "Self_Help_Images/ActsofKindness.png",
+        doctorUrl8 = "Self_Help_Images/ExpressingGratitude.png";
+ // ----------------- Self-Help Descriptions -------------------
+  var descrip1 = "Make to-do lists",
+      descrip2 = "Journal",
+      descrip3 = "Plan a break from social media",
+      descrip4 = "Watch a guided meditation video",
+      descrip5 = "Spend 30 minutes doing something you enjoy",
+      descrip6 = "Take a 30 minute walk",
+      descrip7 = "Buy someone coffee or compliment a friend",
+      descrip8 = "Write down 3 good things that happened today";    
+
+// -------------- Code Called to Output the Images -------------------    
+    outputImage(doctorUrl1, [550, 200], "Commiting to Goals",descrip1);
+    outputImage(doctorUrl2, [462.13203435596427, 412.13203435596427], "Strategies for Coping",descrip2);
+    outputImage(doctorUrl3, [250.00000000000003, 500], "Avoid Social Comparison",descrip3);
+    outputImage(doctorUrl4, [37.86796564403576, 412.13203435596427], "Meditate",descrip4);
+    outputImage(doctorUrl5, [-50, 200.00000000000003], "Self Care",descrip5);
+    outputImage(doctorUrl6, [37.867965644035706, -12.132034355964237], "Physical Activity",descrip6);
+    outputImage(doctorUrl7, [249.99999999999994, -100], "Acts of Kindness",descrip7);
+    outputImage(doctorUrl8, [462.13203435596427, -12.132034355964294], "Expressing Gratitude",descrip8);
+
+
+// --------------- Code to add labels to circles -----------------------
+
+var g2 = svg.append("g2");
+
+g2.append("text")
+  .attr("id", "psych-text")
+  .data(self_help_strategies)
+  .attr("x", function(d){return d.x;})
+  .attr("y", function(d){return d.y;})
+  .attr("dx", "10px")
+  .attr("dy", "1em")
+  .text(function(d) {return d.name;});     
+   
+  
+/*************************************************
+    CREATE THE LEGENDS
+  legend numbers go from top left to bottom right
+**************************************************/
+//adding legends
+//width and height of each rectangle
+var w = 120, h = 175;
+//legend 1
+var legend1 = svg.append("defs").append("svg:linearGradient").attr("id", "gradient").attr("x1", "100%").attr("y1", "0%").attr("x2", "100%").attr("y2", "100%").attr("spreadMethod", "pad");
+legend1.append("stop").attr("offset", "0%").attr("stop-color", "#f9ccc5").attr("stop-opacity", 1);
+legend1.append("stop").attr("offset", "100%").attr("stop-color", "#ed553b").attr("stop-opacity", 1);
+//append rectangle legend to svg
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient)").attr("transform", "translate(672,-100)" + "rotate(90)");
+//label for legend 1
+svg.append("text")
+  .attr("x", 597)
+  .attr("y", -62)
+  .text("commitment")
+  .attr("id", "legend-text");
+//legend 2
+var legend2 = svg.append("defs").append("svg:linearGradient").attr("id", "gradient2").attr("x1", "100%").attr("y1", "0%").attr("x2", "100%").attr("y2", "100%").attr("spreadMethod", "pad");
+legend2.append("stop").attr("offset", "0%").attr("stop-color", "#fae2b3").attr("stop-opacity", 1);
+legend2.append("stop").attr("offset", "100%").attr("stop-color", "#f0a515").attr("stop-opacity", 1);
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient2)").attr("transform", "translate(772,-100)" + "rotate(90)");
+//label for legend 2
+svg.append("text")
+  .attr("x", 697)
+  .attr("y", -62)
+  .text("care")
+  .attr("id", "legend-text");
+//legend 3
+var legend3 = svg.append("defs").append("svg:linearGradient")
+  .attr("id", "gradient3")
+  .attr("x1", "100%")
+  .attr("y1", "0%")
+  .attr("x2", "100%")
+  .attr("y2", "100%")
+  .attr("spreadMethod", "pad");
+legend3.append("stop").attr("offset", "0%").attr("stop-color", "#bbe2e5").attr("stop-opacity", 1);
+legend3.append("stop").attr("offset", "100%").attr("stop-color", "#0894a1").attr("stop-opacity", 1);
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient3)").attr("transform", "translate(872,-100)" + "rotate(90)");
+//label for legend 3
+svg.append("text")
+  .attr("x", 797)
+  .attr("y", -62)
+  .text("connection")
+  .attr("id", "legend-text");
+//legend 4
+var legend4 = svg.append("defs").append("svg:linearGradient").attr("id", "gradient4").attr("x1", "100%").attr("y1", "0%").attr("x2", "100%").attr("y2", "100%").attr("spreadMethod", "pad");
+legend4.append("stop").attr("offset", "0%").attr("stop-color", "#cde8d6").attr("stop-opacity", 1);
+legend4.append("stop").attr("offset", "100%").attr("stop-color", "#47ab6c").attr("stop-opacity", 1);
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient4)").attr("transform", "translate(972,-100)" + "rotate(90)");
+//label for legend 4
+svg.append("text")
+  .attr("x", 897)
+  .attr("y", -62)
+  .text("career")
+  .attr("id", "legend-text");
+
+
+
+
+      /************************************************
+
+          Setup for passing the button to the next page
+
+      *************************************************/
+
+   // Add button variables
+   var button = document.getElementById("button");   
+   console.log(button);
+   button.addEventListener('click', function() {
+       var array = "array";
+       var stressorStr = "/";
+       for (i in selectedStressorsArr) {
+           stressorStr += "_" + selectedStressorsArr[i];
+       }
+       console.log(stressorStr);
+       location.href=URL_add_parameter("socialsupport.html", array, stressorStr);
+       console.log(location);
+   });
+
+   var buttonBack = document.getElementById("button-back");
+   console.log(buttonBack)
+   buttonBack.addEventListener('click', function() {
+       var array = "array";
+       var stressorStr = "/";
+       for (i in selectedStressorsArr) {
+           stressorStr += "_" + selectedStressorsArr[i];
+       }
+       //console.log(stressorStr);
+       location.href=URL_add_parameter("stress_portrait_selected.html", array, stressorStr);
+       console.log(location);
+   });
+
+  function URL_add_parameter(url, param, value){
+      var hash       = {};
+      var parser     = document.createElement('a');
+
+      parser.href    = url;
+
+      var parameters = parser.search.split(/\?|&/);
+
+      for(var i=0; i < parameters.length; i++) {
+          if(!parameters[i])
+              continue;
+
+          var ary      = parameters[i].split('=');
+          hash[ary[0]] = ary[1];
+      }
+
+      hash[param] = value;
+
+      var list = [];  
+      Object.keys(hash).forEach(function (key) {
+          list.push(key + '=' + hash[key]);
+      });
+
+      parser.search = '?' + list.join('&');
+      return parser.href;
+  };
+          
+         
+       
+    
+  </script>
+</body>

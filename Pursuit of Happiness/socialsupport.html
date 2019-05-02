@@ -1,0 +1,2062 @@
+<!DOCTYPE html> 
+<head>
+<meta charset="utf-8">
+</head>
+
+<style>
+body {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+}
+
+h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  color: #707070;
+}
+
+#outside-circle-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  color: #707070;
+  font-weight: bold;
+}
+
+#circle-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  color: #707070;
+}
+
+#legend-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  color: #707070;  
+}
+
+#network-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  color: #707070;  
+}
+
+#resource-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px;
+  color: #707070; 
+  text-align: center; 
+}
+
+.link {
+    fill:none;
+    stroke: #DDD;
+    stroke-width:1px;
+}  
+
+axis text {
+  font: 10px Montserrat;
+}
+
+.axis line, .axis path {
+  fill: "black";
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.button-back {
+    width: 3em;
+    height: 1.5em;
+    border: 2px;
+    font-family: "Montserrat", sans-serif;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    color: #454545;
+    border-color: #707070;
+    background: #efefef;
+    border-radius: 5px;
+    position: absolute;
+    line-height: 35px;
+    margin-left: 40px;
+    margin-top: 300px;
+    background-image: url(back_button.png);
+    background-size: 50px 25px;
+    background-repeat: no-repeat;
+}
+
+/* The button to open the modal */
+.supNet-button {
+    width: 12em;
+    height: 4.5em;
+    border: 2px;
+    font-family: "Montserrat", sans-serif;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #454545;
+    border-color: #707070;
+    background: #efefef;
+    border-radius: 5px;
+    position: absolute;
+    line-height: 30px;
+    margin-left: 130px;
+    margin-top: 60px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0);  /*Display over screen */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  font-family: "Montserrat", sans-serif;
+  color: #707070;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 30px;
+  border: 1px solid;
+  border-color: #efefef;
+  border-radius: 5px;
+  width: 25%;
+  height:50%; /* Could be more or less, depending on screen size*/
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#input-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #cdcdcd;
+  text-align: center;
+  width: 300px;
+  height: 2em;
+  border: 1px solid #707070;
+}
+
+#prompt-text {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #707070;
+  padding-left: 10px;
+}
+
+.checkboxes {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #707070;
+}
+
+.checkboxes input{
+  margin: -10px 10px 20px 40px;
+}
+
+.supNet-done-button {
+    width: 7em;
+    height: 2em;
+    border: 2px;
+    font-family: "Montserrat", sans-serif;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    color: #454545;
+    border-color: #707070;
+    background: #efefef;
+    position: absolute;
+    line-height: 35px;
+    margin-left: 20px;
+}
+
+.supNet-next-button {
+    width: 7em;
+    height: 2em;
+    border: 2px;
+    font-family: "Montserrat", sans-serif;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    color: #454545;
+    border-color: #707070;
+    background: #efefef;
+    position: absolute;
+    line-height: 35px;
+    margin-left: 190px;
+}
+
+
+</style>
+
+<body>
+
+<h2> <center> Phase 3: Your Social Support Network </center> </h2>
+
+<div class="button-back" id = "button-back"></div>
+
+<!-- load the d3.js library -->    
+<script src="https://d3js.org/d3.v3.min.js"></script> 
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<!-- load jquery library --> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- Trigger/Open the Modal -->
+  <button class = "supNet-button" id = "supNet-button"> Click to input personal connections </button>
+
+  <!-- The Modal -->
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <!--<span class="close">&times;</span> -->
+      <!-- Title and name of support -->
+        <center><p id = "prompt-text">Input your social support network</p></center>
+        <form>
+            <center><input type="text" id="input-text" name="Social Support" value="Name (friends, relatives, pets, etc)"></center>
+      </form>
+      <br>
+      <p id = "prompt-text">Type of Support</p>
+      <div class = "checkboxes">
+        <span>
+        <form action="/action_page.php" method="get">
+          <input type="checkbox" id="informational" name="informational" value="informational">Informational
+          <input type="checkbox" id="emotional" name="emotional" value="emotional">Emotional  
+          <br>
+          <input type="checkbox" id="instrumental" name="instrumental" value="instrumental">Instrumental
+          <input type="checkbox" id="appraisal" name="appraisal" value="appraisal">Appraisal
+          <br>
+          <p id = "prompt-text">Stressor Category</p>
+          <input type="checkbox" id="commitment" name="commitment" value="commitment">Commitment    
+          <input type="checkbox" id="care" name="care" value="care">Care
+          <br>
+          <input type="checkbox" id="connection" name="connection" value="connection">Connection   
+          <input type="checkbox" id="career" name="career" value="career">Career
+          <br>
+          <br>
+        </form>
+        </span>
+      </div>
+          <button class="supNet-done-button" id="supNet-done-button"><b>DONE</b></button>
+          <button class="supNet-next-button" id="supNet-next-button"><b>NEXT</b></button> 
+    </div>
+
+  </div>
+
+<!-- social support network code -->
+
+<script>
+
+    /*******************************************
+
+        Social support network user-input
+
+    ********************************************/
+
+    //Create a map where the key is the name and the value is the types of support that person helps with. 
+    var userInputMap = new Map();
+
+    // Get the modal
+    var modal = document.getElementById('myModal');
+
+    // Get the button that opens the modal
+    var launch_supNet_btn = document.getElementById("supNet-button");
+
+    //Get the DONE button
+    var supNet_done_btn = document.getElementById("supNet-done-button");
+
+    //Get the NEXT button
+    var supNet_next_btn = document.getElementById("supNet-next-button");
+
+    // Get the <span> element that closes the modal
+    //var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the launch button, open the modal 
+    launch_supNet_btn.onclick = function() {
+      modal.style.display = "block";
+      document.getElementById("input-text").value =  "Name (friends, relatives, pets, etc.)";
+      $('input[type="checkbox"]').prop('checked', false);
+    } 
+
+    /*
+     When the user clicks on the X button, close the modal and save the input
+    span.onclick = function() {
+      var supportName = document.getElementById("input-text").value;
+      var checkedBoxes = [];
+
+      Go through each of the checks; add the value of the checkbox if it has been checked 
+
+      //Emotional
+      var emotional = document.getElementById("emotional");
+      if (emotional.checked) {
+        checkedBoxes.push(emotional.value);
+      }
+
+      //Instrumental
+      var instrumental = document.getElementById("instrumental");
+      if (instrumental.checked) {
+        checkedBoxes.push(instrumental.value);
+      }
+
+      //informational
+      var informational = document.getElementById("informational");
+      if (informational.checked) {
+        checkedBoxes.push(informational.value);
+      }
+
+      //appraisal
+      var appraisal = document.getElementById("appraisal");
+      if (appraisal.checked) {
+        checkedBoxes.push(appraisal.value);
+      }
+
+      //commitment
+      var commitment = document.getElementById("commitment");
+      if (commitment.checked) {
+        checkedBoxes.push(commitment.value);
+      }
+
+      //connection
+      var connection = document.getElementById("connection");
+      if (connection.checked) {
+        checkedBoxes.push(connection.value);
+      }
+
+      //care
+      var care = document.getElementById("care");
+      if (care.checked) {
+        checkedBoxes.push(care.value);
+      }
+
+      //career
+      var career = document.getElementById("career");
+      if (career.checked) {
+        checkedBoxes.push(career.value);
+      }
+
+      //console.log(checkedBoxes);
+      // Save checked boxes to map, provided the supportName is not already in there
+      if (!userInputMap.has(supportName)) {
+        userInputMap.set(supportName, checkedBoxes);
+      }
+
+      //Call the function that will create the social support network
+      getSupportNet(userInputMap);
+
+      modal.style.display = "none";
+    } */
+
+    // When the user clicks anywhere outside of the modal, keep modal open
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "block";
+        }
+    }
+
+    /*
+     When the user clicks on the DONE button, close the modal and save the input
+    */
+    supNet_done_btn.onclick = function() {
+      var supportName = document.getElementById("input-text").value;
+      var checkedBoxes = [];
+
+      /*    Go through each of the checks; add the value 
+          of the checkbox if it has been checked */
+
+      //Emotional
+      var emotional = document.getElementById("emotional");
+      if (emotional.checked) {
+        checkedBoxes.push(emotional.value);
+      }
+
+      //Instrumental
+      var instrumental = document.getElementById("instrumental");
+      if (instrumental.checked) {
+        checkedBoxes.push(instrumental.value);
+      }
+
+      //informational
+      var informational = document.getElementById("informational");
+      if (informational.checked) {
+        checkedBoxes.push(informational.value);
+      }
+
+      //appraisal
+      var appraisal = document.getElementById("appraisal");
+      if (appraisal.checked) {
+        checkedBoxes.push(appraisal.value);
+      }
+
+      //commitment
+      var commitment = document.getElementById("commitment");
+      if (commitment.checked) {
+        checkedBoxes.push(commitment.value);
+      }
+
+      //connection
+      var connection = document.getElementById("connection");
+      if (connection.checked) {
+        checkedBoxes.push(connection.value);
+      }
+
+      //care
+      var care = document.getElementById("care");
+      if (care.checked) {
+        checkedBoxes.push(care.value);
+      }
+
+      //career
+      var career = document.getElementById("career");
+      if (career.checked) {
+        checkedBoxes.push(career.value);
+      }
+
+      //console.log(checkedBoxes);
+      // Save checked boxes to map, provided the supportName is not already in there
+      if (!userInputMap.has(supportName)) {
+        userInputMap.set(supportName, checkedBoxes);
+      }
+      console.log(userInputMap);
+
+      //Call the function that will create the social support network
+      getSupportNet(userInputMap);
+
+      modal.style.display = "none";
+      launch_supNet_btn.style.display = "none";
+    }
+
+
+    // When the user clicks on the NEXT button, move to a new modal screen
+    supNet_next_btn.onclick = function() {
+      modal.style.display = "block";
+      var supportName = document.getElementById("input-text").value;
+      var checkedBoxes = [];
+
+      /*    Go through each of the checks; add the value 
+          of the checkbox if it has been checked */
+
+      //Emotional
+      var emotional = document.getElementById("emotional");
+      if (emotional.checked) {
+        checkedBoxes.push(emotional.value);
+      }
+
+      //Instrumental
+      var instrumental = document.getElementById("instrumental");
+      if (instrumental.checked) {
+        checkedBoxes.push(instrumental.value);
+      }
+
+      //informational
+      var informational = document.getElementById("informational");
+      if (informational.checked) {
+        checkedBoxes.push(informational.value);
+      }
+
+      //appraisal
+      var appraisal = document.getElementById("appraisal");
+      if (appraisal.checked) {
+        checkedBoxes.push(appraisal.value);
+      }
+
+      //commitment
+      var commitment = document.getElementById("commitment");
+      if (commitment.checked) {
+        checkedBoxes.push(commitment.value);
+      }
+
+      //connection
+      var connection = document.getElementById("connection");
+      if (connection.checked) {
+        checkedBoxes.push(connection.value);
+      }
+
+      //care
+      var care = document.getElementById("care");
+      if (care.checked) {
+        checkedBoxes.push(care.value);
+      }
+
+      //career
+      var career = document.getElementById("career");
+      if (career.checked) {
+        checkedBoxes.push(career.value);
+      }
+
+      //console.log(checkedBoxes);
+      // Save checked boxes to map, provided the supportName is not already in there
+      if (!userInputMap.has(supportName)) {
+        userInputMap.set(supportName, checkedBoxes);
+      }
+      //console.log(userInputMap);
+
+      document.getElementById("input-text").value =  "Name (friends, relatives, pets, etc.)";
+      $('input[type="checkbox"]').prop('checked', false);
+    }
+
+      /*****************************************************
+        Results of code above: a map called userInputMap
+        that contains a (key,value) map of the format:
+          key (string): person who provides support to user
+          value (array): areas in which support isprovided
+      ******************************************************/
+
+
+
+/* Back button */     
+var buttonBack = document.getElementById("button-back");
+     
+// Set up the page 
+var margin = {top: 150, right: 20, bottom: 10, left: 650};
+var width =  1475 - margin.left - margin.right;
+var height = 650 - margin.top - margin.bottom;
+// Create SVG
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+// X and Y range + domain 
+  var x = d3.scaleLinear().range([0, 750]);
+  var y = d3.scaleLinear().range([750, 0]);
+  
+  x.domain([0, 50]);
+  y.domain([0, 50]);
+
+  var tooltip = d3.select("body")
+                  .append("div")
+                  .style('position','absolute')
+                  .style('text-align','center')
+                  .style('width','300px')
+                  .style('margin-top','-35px')
+                  .style('font','200x sans-serif')
+                  .style('padding','0 6.5px')
+                  .style('background', 'lightgray')
+                  .style('opacity',0)
+                  .attr('class','tooltip');
+
+//array of circle coordinates, radius, color and name
+var jsonCircles = [
+   { "x_axis": -5, 
+  "y_axis": 80, 
+  "radius": 50, 
+  "color" : "#f9e7da", 
+  "name" : "Appraisal"}, //top left circle
+   { "x_axis": -2, 
+  "y_axis": 170, 
+  "radius": 50, 
+  "color" : "#f9e7da", 
+  "name" : "Appraisal"}, //bottom left
+{ "x_axis": 162, 
+  "y_axis": 20, 
+  "radius": 50, 
+  "color" : "#eff2e2", 
+  "name" : "Informational"}, //top right
+   { "x_axis": 223, 
+  "y_axis": 185, 
+  "radius": 50, 
+  "color" : "#ede6de", 
+  "name" : "Emotional"}, //bottom left
+{ "x_axis": 65, 
+  "y_axis": 15, 
+  "radius": 50, 
+  "color" : "#e3e6e7", 
+  "name" : "Instrumental"},
+{ "x_axis": 60, 
+  "y_axis": 238, 
+  "radius": 50, 
+  "color" : "#e3e6e7", 
+  "name" : "Instrumental"},
+{ "x_axis": 227, 
+  "y_axis": 90, 
+  "radius": 50, 
+  "color" : "#ede6de", 
+  "name" : "Emotional"},
+{ "x_axis": 150, 
+  "y_axis": 243, 
+  "radius": 50, 
+  "color" : "#eff2e2", 
+  "name" : "Informational"}
+];
+//creating, appending and coloring the circles
+var circles = svg.selectAll("circle", "id")
+                          .data(jsonCircles)
+                          .enter()
+                          .append("circle")
+      .attr("fill", "url(#grad)");
+//creating the circles-position on the screen and size
+var circleAttributes = circles
+                       .attr("cx", function (d) { return d.x_axis; })
+                      .attr("cy", function (d) { return d.y_axis; })
+                       .attr("r", function (d) { return d.radius; })
+      .style("fill", function (d) {return d.color;});
+//Draws the overlapping circle
+var overlapcircle = svg.append("circle")
+                          .attr("cx", 112)
+                          .attr("cy", 130)
+                        .attr("r", 125)
+      .attr("fill", "white");
+/*******************************
+    CREATE THE LABLES FOR CIRCLES - clockwise starting from bottom left circle labeled "Appraisal"
+********************************/
+//label for circle 1
+svg.append("text")
+  .attr("x", 10)
+  .attr("y", 95)
+  .text("Appraisal")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (80, 108)" + "rotate(70)");
+//label for circle 2
+svg.append("text")
+  .attr("x", 0)
+  .attr("y", 50)
+  .text("Appraisal")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (-45, 85)" + "rotate(-65)");
+//label for circle 3
+svg.append("text")
+  .attr("x", 40)
+  .attr("y", 0)
+  .text("Instrumental")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (5, 57)" + "rotate(-23)");
+//label for circle 4
+svg.append("text")
+  .attr("x", 100)
+  .attr("y", -75)
+  .text("Informational")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (5, 48)" + "rotate(23)");
+//label for circle 5
+svg.append("text")
+  .attr("x", 250)
+  .attr("y", 0)
+  .text("Emotional")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (110, -165)" + "rotate(68)");
+//label for circle 6
+svg.append("text")
+  .attr("x", 230)
+  .attr("y", 120)
+  .text("Emotional")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (0, 360)" + "rotate(-65)");
+//label for circle 7
+svg.append("text")
+  .attr("x", 60)
+  .attr("y", 182)
+  .text("Informational")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (0, 100)" + "rotate(-20)");
+//label for circle 8
+svg.append("text")
+  .attr("x", 110)
+  .attr("y", 134)
+  .text("Instrumental")
+  .attr("id", "circle-text")
+  .attr("transform", "translate (0, 50)" + "rotate(28)");
+
+/*******************************
+
+    GET SELECTED STRESSORS
+
+********************************/
+
+ //All possible stressors
+var allStressors = ["School-Social Life Balance", "Homesickness", "Relationship Difficulties",
+  "Time Management", "Illness", "Staying Active", "Work-Study Balance", "Public Speaking and Presentations",
+  "Language Barrier and Cultural Differences", "Social Life Improvement", "Loneliness", "Deadlines", 
+  "Extracurriculars", "Academic Performance", "Healthy Eating", "Difficulty Sleeping", "Fear of Failure", 
+  "Career Anxiety", "Homework and Assignment Management", "Personal Finance"];
+
+var selectedStressorsArr = [];
+var id = window.location.href.split('_');
+//console.log(id);
+var len = id.length;
+for(var i =0; i < len-1; i++) {
+    //console.log(i);
+    var current = id.pop().replace(/%20/g, " ");
+    //If the current stressor is NOT already in the list and it is a stressor, add it 
+    if (selectedStressorsArr.indexOf(current) <= -1 && allStressors.indexOf(current) > -1) {
+        selectedStressorsArr[i] = current;
+    }
+}
+//console.log(selectedStressorsArr);
+buttonBack.addEventListener('click', function() {
+    var array = "array";
+    var stressorStr = "/";
+    for (i in selectedStressorsArr) {
+        stressorStr += "_" + selectedStressorsArr[i];
+    }
+    //console.log(stressorStr);
+    location.href=URL_add_parameter("imagestress.html", array, stressorStr);
+    //console.log(location);
+});
+
+
+/*******************************
+    CREATE THE LEGENDS
+  legend numbers go from top left to bottom right
+********************************/
+//adding legends
+//width and height of each rectangle
+var w = 120, h = 175;
+//legend 1
+var legend1 = svg.append("defs").append("svg:linearGradient").attr("id", "gradient").attr("x1", "100%").attr("y1", "0%").attr("x2", "100%").attr("y2", "100%").attr("spreadMethod", "pad");
+legend1.append("stop").attr("offset", "0%").attr("stop-color", "#f9ccc5").attr("stop-opacity", 1);
+legend1.append("stop").attr("offset", "100%").attr("stop-color", "#ed553b").attr("stop-opacity", 1);
+//append rectangle legend to svg
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient)").attr("transform", "translate(500,-150)" + "rotate(90)");
+//label for legend 1
+svg.append("text")
+  .attr("x", 425)
+  .attr("y", -118)
+  .text("commitments")
+  .attr("id", "legend-text");
+//legend 2
+var legend2 = svg.append("defs").append("svg:linearGradient").attr("id", "gradient2").attr("x1", "100%").attr("y1", "0%").attr("x2", "100%").attr("y2", "100%").attr("spreadMethod", "pad");
+legend2.append("stop").attr("offset", "0%").attr("stop-color", "#fae2b3").attr("stop-opacity", 1);
+legend2.append("stop").attr("offset", "100%").attr("stop-color", "#f0a515").attr("stop-opacity", 1);
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient2)").attr("transform", "translate(600,-150)" + "rotate(90)");
+//label for legend 2
+svg.append("text")
+  .attr("x", 525)
+  .attr("y", -118)
+  .text("care")
+  .attr("id", "legend-text");
+//legend 3
+var legend3 = svg.append("defs").append("svg:linearGradient")
+  .attr("id", "gradient3")
+  .attr("x1", "100%")
+  .attr("y1", "0%")
+  .attr("x2", "100%")
+  .attr("y2", "100%")
+  .attr("spreadMethod", "pad");
+legend3.append("stop").attr("offset", "0%").attr("stop-color", "#bbe2e5").attr("stop-opacity", 1);
+legend3.append("stop").attr("offset", "100%").attr("stop-color", "#0894a1").attr("stop-opacity", 1);
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient3)").attr("transform", "translate(700,-150)" + "rotate(90)");
+//label for legend 3
+svg.append("text")
+  .attr("x", 625)
+  .attr("y", -118)
+  .text("connection")
+  .attr("id", "legend-text");
+//legend 4
+var legend4 = svg.append("defs").append("svg:linearGradient").attr("id", "gradient4").attr("x1", "100%").attr("y1", "0%").attr("x2", "100%").attr("y2", "100%").attr("spreadMethod", "pad");
+legend4.append("stop").attr("offset", "0%").attr("stop-color", "#cde8d6").attr("stop-opacity", 1);
+legend4.append("stop").attr("offset", "100%").attr("stop-color", "#47ab6c").attr("stop-opacity", 1);
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "url(#gradient4)").attr("transform", "translate(800,-150)" + "rotate(90)");
+//label for legend 4
+svg.append("text")
+  .attr("x", 725)
+  .attr("y", -118)
+  .text("career")
+  .attr("id", "legend-text");
+//legend 5
+var legend5 = svg.append("defs");
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "#ede6de").attr("transform", "translate(500,-110)" + "rotate(90)");
+//label for legend 5
+svg.append("text")
+  .attr("x", 425)
+  .attr("y", -75)
+  .text("emotional")
+  .attr("id", "legend-text");
+//label for legend 5 line 2
+svg.append("text")
+  .attr("x", 425)
+  .attr("y", -62)
+  .text("support")
+  .attr("id", "legend-text");
+//legend 6
+var legend5 = svg.append("defs");
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "#eff2e2").attr("transform", "translate(600,-110)" + "rotate(90)");
+//label for legend 6
+svg.append("text")
+  .attr("x", 525)
+  .attr("y", -75)
+  .text("informational")
+  .attr("id", "legend-text");
+//label for legend 6 line 2
+svg.append("text")
+  .attr("x", 525)
+  .attr("y", -62)
+  .text("support")
+  .attr("id", "legend-text");
+//legend 7
+var legend5 = svg.append("defs");
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "#e3e6e7").attr("transform", "translate(700,-110)" + "rotate(90)");
+//label for legend 7
+svg.append("text")
+  .attr("x", 625)
+  .attr("y", -75)
+  .text("instrumental")
+  .attr("id", "legend-text");
+//label for legend 7 line 2
+svg.append("text")
+  .attr("x", 625)
+  .attr("y", -62)
+  .text("support")
+  .attr("id", "legend-text");
+//legend 8
+var legend5 = svg.append("defs");
+svg.append("rect").attr("width", w - 100).attr("height", h - 100).style("fill", "#f9e7da").attr("transform", "translate(800,-110)" + "rotate(90)");
+//label for legend 8
+svg.append("text")
+  .attr("x", 725)
+  .attr("y", -75)
+  .text("appraisal")
+  .attr("id", "legend-text");
+//label for legend 8 line 2
+svg.append("text")
+  .attr("x", 725)
+  .attr("y", -62)
+  .text("support")
+  .attr("id", "legend-text");
+
+
+/**********************************************
+
+      Creating the curved resource labels 
+
+**********************************************/
+//label for personal connections
+svg.append("path")
+    .attr("id", "personal") //Unique id of the path
+    .attr("d", "M 0,300 A 200,200 0 0,1 400,300") //SVG path
+    .style("fill", "none")
+    .style("stroke", "none")
+  .attr("transform", "translate(-90, -150)");
+
+svg.append("text")
+   .append("textPath") //append a textPath to the text element
+    .attr("xlink:href", "#personal") //place the ID of the path here
+    .style("text-anchor","left") //place the text halfway on the arc
+    .attr("startOffset", "50%")
+    .text("Personal Connections")
+  .attr("id", "outside-circle-text");
+
+//label for on-campus resources
+svg.append("path")
+    .attr("id", "campus") //Unique id of the path
+    .attr("d", "M 0,300 A 200,200 0 0,0 400,300") //SVG path
+    .style("fill", "none")
+    .style("stroke", "none")
+  .attr("transform", "translate(-90, -175)");
+
+svg.append("text")
+   .append("textPath") //append a textPath to the text element
+    .attr("xlink:href", "#campus") //place the ID of the path here
+    .style("text-anchor","right") //place the text halfway on the arc
+    .attr("startOffset", "25%")
+    .text("Campus Resources")
+  .attr("id", "outside-circle-text");
+
+/**********************************************
+ LINKING NODES TO WEBPAGES
+
+Array for setting up  the link objects.
+   Contains: 
+    name: name of resource
+    x and y: points where shapes are located on the screen
+
+    color: the color to be used (hue chosen by category)
+    (#47ab6c = green (career), #f0a515 = yellow (care), #0894a1 = blue (connection), #ed553b = red (commitments))
+
+    resource-: resource + some number; used to print the text on the object, more than one of these indicates the stressor is printed on multiple lines
+    category: category the resource belongs to (commitments, connection, care, career)
+    name: full name of resource
+    xlab, ylab, dx, dy: stores location of text 
+
+**********************************************/
+//array of on-campus resources by category
+var arrayOfResources = [
+   {
+  "name" : "Dennis Learning Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Homework & Assignment Management",
+  "site" : "https://dennislearningcenter.osu.edu/",
+  "description" : "Helps students examine academic strengths and weaknesses, develop strategies that lead to academic success, stay ahead on work and avoid procrastination, build effective study methods, overcome test anxiety, and improve test-taking strategies",
+  "x" : -60, 
+"y" : 400,
+"hgt" : 20,
+"wid" : 138,
+//label properties
+"xlab" : -20,
+"ylab" : 411,
+"dx" : -30,
+"dy" : ".35em"
+}, {
+"name" : "Dennis Learning Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Deadlines",
+  "site" : "https://dennislearningcenter.osu.edu/",
+  "description" : "Helps students examine academic strengths and weaknesses, develop strategies that lead to academic success, stay ahead on work and avoid procrastination, build effective study methods, overcome test anxiety, and improve test-taking strategies",
+  "x" : -60, 
+"y" : 400,
+"hgt" : 20,
+"wid" : 138,
+//label properties
+"xlab" : -20,
+"ylab" : 411,
+"dx" : -30,
+"dy" : ".35em"
+}, {
+"name" : "Dennis Learning Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Time Management",
+  "site" : "https://dennislearningcenter.osu.edu/",
+  "description" : "Helps students examine academic strengths and weaknesses, develop strategies that lead to academic success, stay ahead on work and avoid procrastination, build effective study methods, overcome test anxiety, and improve test-taking strategies",
+  "x" : -60, 
+"y" : 400,
+"hgt" : 20,
+"wid" : 138,
+//label properties
+"xlab" : -20,
+"ylab" : 411,
+"dx" : -30,
+"dy" : ".35em"
+}, {
+  "name" : "COMM 2110",
+  "color" : "#47ab6c", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Public Speaking & Presentation",
+  "site" : "https://comm.osu.edu/courses/comm/2110",
+  "description" : "A course in critical thinking and public speaking",
+  "x" : -197, 
+"y" : 387,
+"hgt" : 20,
+"wid" : 75,
+//label properties
+"xlab" : -162,
+"ylab" : 370,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Buckeye Careers",
+  "color" : "#47ab6c", 
+  "support": "Informational", 
+  "category" : "career", 
+  "stressor" : "Career Anxiety",
+  "site" : "https://careers.osu.edu/",
+  "description" : "Offers career development assistance, support and resources - from selecting a major to starting a career - for all Ohio State students",
+  "x" : -260, 
+"y" : 198,
+"hgt" : 20,
+"wid" : 105,
+//label properties
+"xlab" : -222,
+"ylab" : 178,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#47ab6c", 
+  "support": "Emotional", 
+  "category" : "career", 
+  "stressor" : "Career Anxiety",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Loneliness",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Homesickness",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Social Life Improvement",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Relationship Difficulties",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Healthy Eating",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#ed553b", 
+  "support": "Emotional", 
+  "category" : "commitments", 
+  "stressor" : "Fear of Failure",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Counseling and Consultation Services",
+  "color" : "#ed553b", 
+  "support": "Emotional", 
+  "category" : "commitments", 
+  "stressor" : "School-Social Life Balance",
+  "site" : "https://ccs.osu.edu/",
+  "description" : "Services include: individual, group and couple's counseling, psychological testing, workshops, consultations, and community referral and linkage",
+  "x" : -495, 
+"y" : 144,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -460,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Interview With a Buckeye",
+  "color" : "#47ab6c", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Career Anxiety",
+  "site" : "https://artsandsciences.osu.edu/news-events/events/interview-buckeye",
+  "description" : "Improve your interviewing confidence and your ability to make a positive impression, and increase your chances of succeeding in a post career fair interview by participating in a mock interview with OSU alumni who will provide feedback about your interviewing skills, answer questions you may have about interviewing, and provide tips for resume improvement",
+  "x" : -413, 
+"y" : 398,
+"hgt" : 20,
+"wid" : 138,
+//label properties
+"xlab" : -375,
+"ylab" : 378,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Handshake",
+  "color" : "#47ab6c", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Career Anxiety",
+  "site" : "https://handshake.osu.edu/",
+  "description" : "Ohio State’s university-wide position posting system where students have access to search and apply for part-time jobs, internships, co-ops, and full-time career opportunities. Thousands of jobs, internship and career opportunities are posted in Handshake as well as information on upcoming career fairs and on-campus recruiting events.",
+   "x" : -310, 
+"y" : 358,
+"hgt" : 20,
+"wid" : 73,
+//label properties
+"xlab" : -272,
+"ylab" : 339,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Academic College's Career Services",
+  "color" : "#47ab6c", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Career Anxiety",
+  "site" : "https://artsandsciences.osu.edu/career-success",
+  "description" : "Meet with your career coach, explore signature programs, research career courses and internship credit, and more!",
+  "x" : -220, 
+"y" : 428,
+"hgt" : 20,
+"wid" : 200,
+//label properties
+"xlab" : -182,
+"ylab" : 409,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Scarlet and Gray Financial",
+  "color" : "#47ab6c", 
+  "support": "Informational", 
+  "category" : "career", 
+  "stressor" : "Personal Finance",
+  "site" : "https://swc.osu.edu/services/financial-education/financial-coaching/",
+  "description" : "Schedule a one-on-one appointment with a peer financial coach to discuss topics including financial goal setting, banking basics, budgeting, credit education and more!",
+   "x" : -494, 
+"y" : 205,
+"hgt" : 20,
+"wid" : 148,
+//label properties
+"xlab" : -458,
+"ylab" : 185,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "BuckeyeLink",
+  "color" : "#47ab6c", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Personal Finance",
+  "site" : "https://buckeyelink.osu.edu/",
+  "description" : "Access your class schedule, financial aid, transcripts, personal information, etc.",
+  "x" : -287, 
+"y" : 145,
+"hgt" : 20,
+"wid" : 75,
+//label properties
+"xlab" : -252,
+"ylab" : 125,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "DTix",
+  "color" : "#47ab6c", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Personal Finance",
+  "site" : "https://activities.osu.edu/programs/dtix",
+  "description" : "Get discounted tickets to concerts, festivals, performances, sporting events and more at the DTix desk in the Ohio Union.",
+  "x" : -330, 
+"y" : 195,
+"hgt" : 20,
+"wid" : 38,
+//label properties
+"xlab" : -292,
+"ylab" : 175,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "DTix",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Social Life Improvement",
+  "site" : "https://activities.osu.edu/programs/dtix",
+  "description" : "Get discounted tickets to concerts, festivals, performances, sporting events and more at the DTix desk in the Ohio Union.",
+  "x" : -330, 
+"y" : 195,
+"hgt" : 20,
+"wid" : 38,
+//label properties
+"xlab" : -292,
+"ylab" : 175,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "DTix",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Extracurriculars",
+  "site" : "https://activities.osu.edu/programs/dtix",
+  "description" : "Get discounted tickets to concerts, festivals, performances, sporting events and more at the DTix desk in the Ohio Union.",
+  "x" : -330, 
+"y" : 195,
+"hgt" : 20,
+"wid" : 38,
+//label properties
+"xlab" : -292,
+"ylab" : 175,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Office of International Affairs",
+  "color" : "#47ab6c", 
+  "support": "Instrumental", 
+  "category" : "career", 
+  "stressor" : "Career Anxiety",
+  "site" : "https://oia.osu.edu/",
+  "description" : "Research education abroad opportunities, access resources for immigration, employment, global engagement and more, or make an appointment with an immigration coordinator.",
+  "x" : -424, 
+"y" : 95,
+"hgt" : 20,
+"wid" : 155,
+//label properties
+"xlab" : -387,
+"ylab" : 75,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "International Friendships",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Loneliness",
+  "site" : "https://ohiostate.ifiusa.org/",
+  "description" : "A community organization that works in partnership with universities and Christian volunteers to promote friendship and hospitality for international students, scholars and family members. It also partners with internationals through on-campus student organizations.",
+  "x" : -500, 
+"y" : 325,
+"hgt" : 20,
+"wid" : 140,
+//label properties
+"xlab" : -462,
+"ylab" : 305,
+"dx" : -30,
+"dy" : "3em"
+},{
+"name" : "International Friendships",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Homesickness",
+  "site" : "https://ohiostate.ifiusa.org/",
+  "description" : "A community organization that works in partnership with universities and Christian volunteers to promote friendship and hospitality for international students, scholars and family members. It also partners with internationals through on-campus student organizations.",
+  "x" : -500, 
+"y" : 325,
+"hgt" : 20,
+"wid" : 140,
+//label properties
+"xlab" : -462,
+"ylab" : 305,
+"dx" : -30,
+"dy" : "3em"
+},{
+"name" : "International Friendships",
+  "color" : "#0894a1", 
+  "support": "Emotional", 
+  "category" : "connection", 
+  "stressor" : "Homesickness",
+  "site" : "https://ohiostate.ifiusa.org/",
+  "description" : "A community organization that works in partnership with universities and Christian volunteers to promote friendship and hospitality for international students, scholars and family members. It also partners with internationals through on-campus student organizations.",
+  "x" : -500, 
+"y" : 325,
+"hgt" : 20,
+"wid" : 140,
+//label properties
+"xlab" : -462,
+"ylab" : 305,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Wellness Coaching",
+  "color" : "#0894a1", 
+  "support": "Appraisal", 
+  "category" : "connection", 
+  "stressor" : "Social Life Improvement",
+  "site" : "https://swc.osu.edu/services/wellness-coaching/",
+  "description" : "A free service that provides opportunities for you to gain awareness regarding your capacity to create the life you want to live, both now and in the future.  Wellness coaches take a positive approach to personal development, focusing on your strengths and using the Nine Dimensions of Wellness model as a framework for generating goals that are meaningful for you.",
+  "x" : -460, 
+"y" : 420,
+"hgt" : 20,
+"wid" : 108,
+//label properties
+"xlab" : -425,
+"ylab" : 400,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Wellness Coaching",
+  "color" : "#0894a1", 
+  "support": "Appraisal", 
+  "category" : "connection", 
+  "stressor" : "Relationship Difficulties",
+  "site" : "https://swc.osu.edu/services/wellness-coaching/",
+  "description" : "A free service that provides opportunities for you to gain awareness regarding your capacity to create the life you want to live, both now and in the future.  Wellness coaches take a positive approach to personal development, focusing on your strengths and using the Nine Dimensions of Wellness model as a framework for generating goals that are meaningful for you.",
+  "x" : -460, 
+"y" : 420,
+"hgt" : 20,
+"wid" : 108,
+//label properties
+"xlab" : -425,
+"ylab" : 400,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Wellness Coaching",
+  "color" : "#0894a1", 
+  "support": "Appraisal", 
+  "category" : "connection", 
+  "stressor" : "Time Management",
+  "site" : "https://swc.osu.edu/services/wellness-coaching/",
+  "description" : "A free service that provides opportunities for you to gain awareness regarding your capacity to create the life you want to live, both now and in the future.  Wellness coaches take a positive approach to personal development, focusing on your strengths and using the Nine Dimensions of Wellness model as a framework for generating goals that are meaningful for you.",
+  "x" : -460, 
+"y" : 420,
+"hgt" : 20,
+"wid" : 108,
+//label properties
+"xlab" : -425,
+"ylab" : 400,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Student Involvement Fair",
+  "color" : "#0894a1", 
+  "support": "Informational", 
+  "category" : "connection", 
+  "stressor" : "Social Life Improvement",
+  "site" : "https://activities.osu.edu/programs/major_campus_events/student_involvement_fairs/",
+  "description" : "The Student Involvement Fair is a great place to find a student organization that meets your needs and interests. There are two annual Student Involvement Fairs. One takes place during in August Welcome Week and the other takes place in January at the start of Spring Semester.",
+   "x" : -486,
+ "y" : 270,
+"hgt" : 20,
+"wid" : 139,
+//label properties
+"xlab" : -450,
+"ylab" : 250,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Student Involvement Fair",
+  "color" : "#0894a1", 
+  "support": "Informational", 
+  "category" : "connection", 
+  "stressor" : "Extracurriculars",
+  "site" : "https://activities.osu.edu/programs/major_campus_events/student_involvement_fairs/",
+  "description" : "The Student Involvement Fair is a great place to find a student organization that meets your needs and interests. There are two annual Student Involvement Fairs. One takes place during in August Welcome Week and the other takes place in January at the start of Spring Semester.",
+   "x" : -486,
+ "y" : 270,
+"hgt" : 20,
+"wid" : 139,
+//label properties
+"xlab" : -450,
+"ylab" : 250,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Intramural Sports",
+  "color" : "#0894a1", 
+  "support": "Instrumental", 
+  "category" : "connection", 
+  "stressor" : "Extracurriculars",
+  "site" : "https://recsports.osu.edu/intramural-sports",
+  "description" : "Make a team with a group of friends or join a team as an individual! A wide range of sports are offered including badminton, soccer, flag football, ice hockey, sand volleyball and many many more. Different sports are offered in the Autumn, Spring and Summer semesters.",
+"x" : -387, 
+"y" : 295,
+"hgt" : 20,
+"wid" : 100,
+//label properties
+"xlab" : -350,
+"ylab" : 275,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "OSU Dining Facilities",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Healthy Eating",
+  "site" : "https://dining.osu.edu/",
+  "description" : "Ask a dietitian about how to build a healthy plate or a plate that fulfills your dietary restrictions, get information about on-campus dining facilities and offerings, or have your parents send you a Buckeye Bundle",
+"x" : -325, 
+"y" : 320,
+"hgt" : 20,
+"wid" : 118,
+//label properties
+"xlab" : -290,
+"ylab" : 300,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Nutrition Coaching",
+  "color" : "#f0a515", 
+  "support": "Appraisal", 
+  "category" : "care", 
+  "stressor" : "Healthy Eating",
+  "site" : "https://swc.osu.edu/services/nutrition-education/nutrition-coaching/",
+  "description" : "A free service for all currently enrolled Ohio State students who want to optimize their health and wellbeing, and work through problems or barriers that block their path to holistic wellness. Nutrition coaching is intended to help students identify any imbalance in their food intake and explore ways to optimize their nutrition needs.",
+"x" : -248, 
+"y" : 104,
+"hgt" : 20,
+"wid" : 105,
+//label properties
+"xlab" : -212,
+"ylab" : 85,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Wilce Student Health Center",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Illness",
+  "site" : "https://shs.osu.edu/",
+  "description" : "Ohio State's on-campus health center provides services such as primary care, gynecologic services, physcial therapy, optometry services and much more",
+"x" : -225, 
+"y" : 244,
+"hgt" : 20,
+"wid" : 155,
+//label properties
+"xlab" : -190,
+"ylab" : 225,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Wilce Student Health Center",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Difficulty Sleeping",
+  "site" : "https://shs.osu.edu/",
+  "description" : "Ohio State's on-campus health center provides services such as primary care, gynecologic services, physcial therapy, optometry services and much more",
+"x" : -225, 
+"y" : 244,
+"hgt" : 20,
+"wid" : 155,
+//label properties
+"xlab" : -190,
+"ylab" : 225,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "CVS Clinic",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Illness",
+  "site" : "https://www.cvs.com/minuteclinic/clinic-locator/oh/columbus/2518.html?WT.mc_id=LS_MC_GOOGLE_2518",
+  "description" : "In addition to diagnosing and treating illnesses, injuries and skin conditions, we provide wellness services including vaccinations, physicals, screenings and monitoring for chronic conditions.",
+ "x" : -388, 
+"y" : 240,
+"hgt" : 20,
+"wid" : 66,
+//label properties
+"xlab" : -352,
+"ylab" : 220,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Wexner Medical Center",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Illness",
+  "site" : "https://wexnermedical.osu.edu/where-should-i-go-for-care",
+  "description" : "Primary care, walk-in care, afterHours care, and emergency care",
+"x" : -480, 
+"y" : 60,
+"hgt" : 20,
+"wid" : 129,
+//label properties
+"xlab" : -445,
+"ylab" : 40,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Martha Morehouse Outpatient Care",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Illness",
+  "site" : "https://wexnermedical.osu.edu/locations-and-parking/afterhours-care-martha-morehouse-outpatient-care",
+  "description" : "Ohio State AfterHours Care at Martha Morehouse Outpatient Care offers evening and weekend hours for treatment of non-life-threatening conditions in patients 14 years old or older.",
+ "x" : -485, 
+"y" : 31,
+"hgt" : 20,
+"wid" : 190,
+//label properties
+"xlab" : -450,
+"ylab" : 12,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "RPAC",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Staying Active",
+  "site" : "https://recsports.osu.edu/facilities/recreation-and-physical-activity-center-rpac",
+  "description" : "Amenities: sport shop, welcome center, scarlet skyway, lockers and locker rooms, fitness space, activity space, aquatic center, dining, wellness suite, and sports medicine",
+"x" : -200, 
+"y" : 69,
+"hgt" : 20,
+"wid" : 45,
+//label properties
+"xlab" : -162,
+"ylab" : 50,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "JO North",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Staying Active",
+  "site" : "https://recsports.osu.edu/facilities/jesse-owens-north-jon-recreation-center",
+  "description" : "Amenities: One basketball court and one matted court, free weights, strength training machines, cardio equipment, equipment available for checkout, day-use lockers",
+"x" : -198, 
+"y" : 140,
+"hgt" : 20,
+"wid" : 55,
+//label properties
+"xlab" : -162,
+"ylab" : 120,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "JO South",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Staying Active",
+  "site" : "https://recsports.osu.edu/facilities/jesse-owens-south-jos-recreation-center",
+  "description" : "Amenities: Two basketball courts, table tennis area, free weights, strength training machines, cardio equipment, equipment available for checkout, day-use lockers",
+ "x" : -285, 
+"y" : 269,
+"hgt" : 20,
+"wid" : 58,
+//label properties
+"xlab" : -250,
+"ylab" : 250,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "North Recreation Center",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Staying Active",
+  "site" : "https://recsports.osu.edu/facilities/north-recreation-center",
+  "description" : "Amenities: Four outdoor basketball courts, four multi-purpose rooms, three floors of fitness equipment, two outdoor sand volleyball courts, free weights, strength training machines, cardio equipment, equipment available for checkout, day-use lockers",
+"x" : -385, 
+"y" : 170,
+"hgt" : 20,
+"wid" : 135,
+//label properties
+"xlab" : -350,
+"ylab" : 150,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Adventure Recreation Center",
+  "color" : "#f0a515", 
+  "support": "Instrumental", 
+  "category" : "care", 
+  "stressor" : "Staying Active",
+  "site" : "https://recsports.osu.edu/facilities/adventure-recreation-center-arc",
+  "description" : "Amenities: Four hardwood basketball courts, two indoor turf fields, three floors of fitness equipment, free weights, strength training machines, cardio equipment, equipment available for checkout, day-use lockers, individual shower facilities",
+ "x" : -435, 
+"y" : 120,
+"hgt" : 20,
+"wid" : 158,
+//label properties
+"xlab" : -400,
+"ylab" : 100,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Younkin Success Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Homework & Assignment Management",
+  "site" : "http://younkinsuccess.osu.edu/",
+  "description" : "Interview training, career counseling, free tutoring in math, physics, and chemistry, and resume review",
+"x" : -198, 
+"y" : 170,
+"hgt" : 20,
+"wid" : 135,
+//label properties
+"xlab" : -162,
+"ylab" : 150,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Younkin Success Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Deadlines",
+  "site" : "http://younkinsuccess.osu.edu/",
+  "description" : "Interview training, career counseling, free tutoring in math, physics, and chemistry, and resume review",
+"x" : -198, 
+"y" : 170,
+"hgt" : 20,
+"wid" : 135,
+//label properties
+"xlab" : -162,
+"ylab" : 150,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Younkin Success Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Time Management",
+  "site" : "http://younkinsuccess.osu.edu/",
+  "description" : "Interview training, career counseling, free tutoring in math, physics, and chemistry, and resume review",
+"x" : -198, 
+"y" : 170,
+"hgt" : 20,
+"wid" : 135,
+//label properties
+"xlab" : -162,
+"ylab" : 150,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Office of Disability Services",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Homework & Assignment Management",
+  "site" : "https://slds.osu.edu/",
+  "description" : "Student Life Disability Services collaborates with and empowers students who have disabilities in order to coordinate support services and programs that enable equal access to an education and university life.",
+"x" : -325, 
+"y" : 220,
+"hgt" : 20,
+"wid" : 147,
+//label properties
+"xlab" : -290,
+"ylab" : 200,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Office of Disability Services",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Academic Performance",
+  "site" : "https://slds.osu.edu/",
+  "description" : "Student Life Disability Services collaborates with and empowers students who have disabilities in order to coordinate support services and programs that enable equal access to an education and university life.",
+"x" : -325, 
+"y" : 220,
+"hgt" : 20,
+"wid" : 147,
+//label properties
+"xlab" : -290,
+"ylab" : 200,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Academic Advisors",
+  "color" : "#ed553b", 
+  "support": "Informational", 
+  "category" : "commitments", 
+  "stressor" : "Academic Performance",
+  "site" : "https://advising.osu.edu/",
+  "description" : "Often serving as the main point of contact between students and the university, advisors help create academic plans that meet your educational and career goals.",
+ "x" : -198, 
+"y" : 320,
+"hgt" : 20,
+"wid" : 108,
+//label properties
+"xlab" : -162,
+"ylab" : 300,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Academic Advisors",
+  "color" : "#ed553b", 
+  "support": "Informational", 
+  "category" : "commitments", 
+  "stressor" : "Work-Study Balance",
+  "site" : "https://advising.osu.edu/",
+  "description" : "Often serving as the main point of contact between students and the university, advisors help create academic plans that meet your educational and career goals.",
+ "x" : -198, 
+"y" : 320,
+"hgt" : 20,
+"wid" : 108,
+//label properties
+"xlab" : -162,
+"ylab" : 300,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Professors",
+  "color" : "#ed553b", 
+  "support": "Informational", 
+  "category" : "commitments", 
+  "stressor" : "Academic Performance",
+  "site" : "https://www.osu.edu/facultystaff/",
+  "description" : "Connect and communicate with your professors through email, after class, or during office hours.",
+"x" : -387, 
+"y" : 370,
+"hgt" : 20,
+"wid" : 68,
+//label properties
+"xlab" : -350,
+"ylab" : 350,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Professors",
+  "color" : "#ed553b", 
+  "support": "Informational", 
+  "category" : "commitments", 
+  "stressor" : "Work-Study Balance",
+  "site" : "https://www.osu.edu/facultystaff/",
+  "description" : "Connect and communicate with your professors through email, after class, or during office hours.",
+"x" : -387, 
+"y" : 370,
+"hgt" : 20,
+"wid" : 68,
+//label properties
+"xlab" : -350,
+"ylab" : 350,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Math and Statistics Learning Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Academic Performance",
+  "site" : "https://mslc.osu.edu/",
+  "description" : "Provides free support to students of many undergraduate Mathematics and Statistics courses at The Ohio State University. We provide trained tutors available to help students with difficulties they are experiencing in class or with homework. In addition, we provide online resources, practice exams and workshops to help students achieve their potential as a student.",
+"x" : -198, 
+"y" : 350,
+"hgt" : 20,
+"wid" : 193,
+//label properties
+"xlab" : -162,
+"ylab" : 330,
+"dx" : -30,
+"dy" : "3em"
+}, {
+"name" : "Writing Center",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Academic Performance",
+  "site" : "https://cstw.osu.edu/writing-center",
+  "description" : "The Writing Center offers free help with writing at any stage of the writing process for any member of the university community. We also maintain a Writing Resources page with writing handouts and links to online resources",
+"x" : -185, 
+"y" : 270,
+"hgt" : 20,
+"wid" : 83,
+//label properties
+"xlab" : -150,
+"ylab" : 250,
+"dx" : -30,
+"dy" : "3em"
+},{ 
+"name" : "Your Boss",
+  "color" : "#ed553b", 
+  "support": "Appraisal", 
+  "category" : "commitments", 
+  "stressor" : "Work-Study Balance",
+  "site" : "",
+  "description" : "Communicate with your boss about any struggles with balancing work and school",
+"x" : -295, 
+"y" : 60,
+"hgt" : 20,
+"wid" : 61,
+//label properties
+"xlab" : -260,
+"ylab" : 40,
+"dx" : -30,
+"dy" : "3em"
+},{
+"name" : "Your Boss",
+  "color" : "#ed553b", 
+  "support": "Informational", 
+  "category" : "commitments", 
+  "stressor" : "Work-Study Balance",
+  "site" : "",
+  "description" : "Communicate with your boss about any struggles with balancing work and school",
+"x" : -295, 
+"y" : 60,
+"hgt" : 20,
+"wid" : 61,
+//label properties
+"xlab" : -260,
+"ylab" : 40,
+"dx" : -30,
+"dy" : "3em"
+},{
+"name" : "Younkin Career Counseling and Support Services",
+  "color" : "#47ab6c", 
+  "support": "Informational", 
+  "category" : "career", 
+  "stressor" : "Career Anxiety",
+  "site" : "https://ccss.osu.edu/",
+  "description" : "The Career Counseling and Support Services web site lists career resources to assist all OSU students in their career decision making processes. These career links represent useful suggestions that you may want to consult  depending on your career planning needs and career goals.",
+"x" : -284, 
+"y" : 8,
+"hgt" : 20,
+"wid" : 260,
+//label properties
+"xlab" : -250,
+"ylab" : -10,
+"dx" : -30,
+"dy" : "3em"
+},{
+"name" : "Younkin Tutoring Services",
+  "color" : "#ed553b", 
+  "support": "Instrumental", 
+  "category" : "commitments", 
+  "stressor" : "Academic Performance",
+  "site" : "http://younkinsuccess.osu.edu/tutoring/",
+  "description" : "In partnership with Residence Life Tutoring Services, free peer tutoring is held in the Younkin Success Center Autumn and Spring semesters. All tutoring is free, and provided by certified peer tutors in the following subjects:  Mathematics, Physics, and Chemistry",
+"x" : -243, 
+"y" : 294,
+"hgt" : 20,
+"wid" : 143,
+//label properties
+"xlab" : -207,
+"ylab" : 275,
+"dx" : -30,
+"dy" : "3em"
+}
+];
+
+/**************************************************
+    
+CREATE THE OBJECTS CONTAINING THE LINKED RESOURCES
+BASED ON THE SELECTED STRESSORS
+
+**************************************************/
+
+//Filter the data by only those stressors that were selected by the use
+filtered = arrayOfResources.filter(function (d) {
+    return selectedStressorsArr.indexOf(d.stressor) > -1;});
+//console.log(filtered);
+
+var g = svg.selectAll("g")
+    .data(filtered)
+    .enter().append("g");
+
+//object containing link to resource and hover over description
+g.append("a")
+    .attr("class", "rect")
+    .data(filtered)
+    .attr("xlink:href", function(d) {return d.site;})
+    .append("rect") 
+    .attr("x", function(d) {return d.x;})
+    .attr("y", function(d) {return d.y;})
+    .attr("height", function(d) {return d.hgt;})
+    .attr("width", function(d) {return d.wid;})
+    .style("fill", "lightgray")
+    .style("opacity", 0.8)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .on("mouseover", function(d){ tooltip.transition()
+      .style('opacity', 10)
+      tooltip.html( d.description)
+      .style('left',(d3.event.pageX +2) + 'px')   
+      .style('top', (d3.event.pageY - 28) + 'px')})
+      .on('mouseout', function(d) { tooltip.transition()
+        .style('opacity', 0)});
+
+//shapes colored corresponding to stressor category
+g.append("a")
+    .attr("class", "rect")
+    .data(filtered)
+    .append("rect") 
+    .attr("x", function(d) {return d.x -15;})
+    .attr("y", function(d) {return d.y + 3;})
+    .attr("height", 15)
+    .attr("width", 15)
+    .style("fill", function (d) {return d.color;})
+    .style("opacity", 0.8)
+    .attr("rx", 10)
+    .attr("ry", 10);      
+
+g.append("text")
+    .attr("id", "resource-text")
+    .data(filtered)
+    .attr("x", function(d){return d.xlab})
+    .attr("y", function(d){return d.ylab})
+    .attr("dx", function(d){return d.dx})
+    .attr("dy", function(d){return d.dy})    
+    .attr("fill", "#454545")
+    .text(function(d) {return d.name;});   
+
+/********************************************
+
+    Function to append user-inputted support
+
+********************************************/
+function getSupportNet(supportMap) {
+
+  //Get names and store in array
+  var names = Array.from(supportMap.keys());
+
+  //Create an array to hold name, random location on screen and type of support
+  var positionNetwork = [];
+
+  // For each name that the user inputted, create an entry in positionNetwork
+  for(i = 0; i < names.length; i++) {
+
+    //Get name of person and generate random point on screen to place name
+    var name = names[i];
+    var x = d3.randomUniform(300,450)();
+    var y = d3.randomUniform(0, 300)();
+
+    //Create array that holds all support types for person i
+    var typeSupport = Array.from(supportMap.get(name));
+    //Create array to hold position information for each type of support on screen
+    var supportArray = [];
+
+    //For each type of support person i gives to user,
+    for (j = 0; j < typeSupport.length; j++) {
+      //Get type of support j, create a x and y coordinate for it
+      var type = typeSupport[j];
+      var xlabel = "x" + j;
+      var ylabel = "y" + j;
+      supportArray.push({"type" : type, [xlabel]: x + j, [ylabel]: y + j});
+      //console.log(supportArray);
+    }
+
+    //Finally, push name, position and support information (type + position) to positionNetwork
+    positionNetwork.push({"name" : name, "x": x, "y": y, "support": supportArray});
+  }
+
+  console.log(positionNetwork);
+
+
+  /* This here is necessary when the user doesn't click on any stressors - 
+   but can we assume this won't happen?
+  var g = svg.selectAll("g")
+    .data(names)
+    .enter().append("g"); 
+    */
+
+  
+  //var bboxText = txt.node().getBBox().width + 5; //<-- get our width plus a margin
+  //console.log(bboxText);
+
+  //Add rect for each person inputted
+  var rectNetwork = g.append("a")
+    .attr("class", "rect2")
+    .data(positionNetwork)
+    .append("rect") 
+    .attr("x", function(d) {return d.x-20;})
+    //.attr("x", function(i) {
+    //  return positionNetwork["x" + i];})
+    .attr("y", function(d,i) {return d.y;})
+    .attr("height", 15)
+    .attr("width", 15)
+    .style("fill", "#707070")//function (d) {return d.color;})
+    .style("opacity", 0.8)
+    .attr("rx", 10)
+    .attr("ry", 10);
+
+  var txt = g.append("text")
+    .attr("id", "network-text")
+    .data(positionNetwork)
+    .attr("x",function(d){return d.x;})
+    .attr("y",function(d){return (d.y+12);})
+    .text(function(d,i) {return d.name;});
+
+  //dynamically resize the rectangle based on the length of text
+  //var txtWidth = txt.node().getBBox().width + 5; //<-- get our width plus a margin
+  //rectNetwork.attr("width", txtWidth);
+
+  /*var txtWidth = [];
+  for (i = 0; i < txt.length; i++) {
+    txtWidth.push({"width" : txt.node().getBBox().width + 5});
+  }
+  console.log(txtWidth); */
+
+  //recenter the text based on new rect length
+  txt.attr("x", function(d) {return (d.x)});
+}
+  
+
+/**********************************************
+
+Function used to pass the url to the next page
+
+**********************************************/
+function URL_add_parameter(url, param, value){
+    var hash       = {};
+    var parser     = document.createElement('a');
+    parser.href    = url;
+    var parameters = parser.search.split(/\?|&/);
+    for(var i=0; i < parameters.length; i++) {
+        if(!parameters[i])
+            continue;
+        var ary      = parameters[i].split('=');
+        hash[ary[0]] = ary[1];
+    }
+    hash[param] = value;
+    var list = [];  
+    Object.keys(hash).forEach(function (key) {
+        list.push(key + '=' + hash[key]);
+    });
+    parser.search = '?' + list.join('&');
+    return parser.href;
+};
+</script>
+</body>
+</html>

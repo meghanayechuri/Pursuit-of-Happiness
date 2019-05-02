@@ -1,0 +1,27 @@
+Evaluation:
+
+The experts we demo'd our current progress with were Dr. Yvette Shen and graduate student Shasha Yu. Dr. Shen and Shasha 
+are the ones who conceptualized the design, so their feedback is crucial throughout our design process. On Wednesday, 
+April 10th, we met with the experts and walked them through our progess, which included: landing page, stress portrait, 
+selected stress potrait, positive psychology strategies, and the social support network. The positive psychology page did 
+not yet have the images of the strategies on the circles, and the social support network nodes were not yet in place. However,
+they were both pleased with our progress and are on board with the fact that we will not fully implement the design by the end 
+of the semester. We communicated that we plan to finish the base of the functionality by the deadline, and will add more of 
+the design aspects next semester either on our own or funded via research grant.
+
+The two fixes that she discussed during the meeting were:
+  1. Adding a static label for the positive psychology strategies, with the tooltip being then a brief description of what 
+the strategy is. For example, for "self care," the circle would contain the corresponding pictograph, a static label below 
+the circle that said "Self Care," and finally a hover-over that said "Set aside 30 minutes today to do something you enjoy."
+  2. On the social support network page, we should add a brief description as to what the service does. This will likely be a 
+brief blurb taken from the website (and modified if necessary) that will give students a better idea as to what the service 
+does, without them having to figure it out on their own. This provides additional usability for users, as someone under 
+stress probably won't be up to doing extensive research on what each resource does, especially since some resources provide 
+many serivces.
+  
+We will work on adding these two features to our final implementation. Additionally, Dr. Shen mentioned that Shasha and herself
+will be working on creating a user-study over the summer that can be run either then or in the fall. This will be a more 
+in-depth user study that will provide meaningful insight. 
+
+
+
